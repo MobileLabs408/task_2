@@ -8,8 +8,8 @@
 %==========================================================================
 function F_v = get_F_v(x_k_one_plus)
 
-F_v = [cos(x_k_one_plus(3)), 0;
-       sin(x_k_one_plus(3)), 0;
-       0,                    1];
+    F_v = [cos(x_k_one_plus(3)), 0;
+           sin(x_k_one_plus(3)), 0;
+           0,                    1];
 
 end

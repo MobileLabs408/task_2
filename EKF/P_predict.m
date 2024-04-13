@@ -8,7 +8,7 @@
 %==========================================================================
 function P_k_one_plus = P_predict(F_x, F_v, V, P_k)
 
-% Note that ' is used for transpose
-P_k_one_plus = F_x * P_k * F_x' + F_v * V * F_v';
+    % Note that ' is used for transpose
+    P_k_one_plus = F_x * P_k * F_x' + F_v * V * F_v';
 
 end

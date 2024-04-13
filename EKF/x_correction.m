@@ -8,6 +8,6 @@
 %==========================================================================
 function x_k_one = x_correction(x_k_one_plus, K, nu)
 
-x_k_one = x_k_one_plus + K*nu;
+    x_k_one = x_k_one_plus + K*nu;
 
 end

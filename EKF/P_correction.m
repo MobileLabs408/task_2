@@ -8,6 +8,6 @@
 %==========================================================================
 function P_k_one = P_correction(P_k_one_plus, K, H_x)
 
-P_k_one = P_k_one_plus - K * H_x * P_k_one_plus;
+    P_k_one = P_k_one_plus - K * H_x * P_k_one_plus;
 
 end

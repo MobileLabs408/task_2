@@ -8,8 +8,8 @@
 %==========================================================================
 function x_k_one_plus = x_predict(x_k, s_r, s_l, v_d, v_theta, l)
 
-x_k_one_plus = [x_k(1) + ((s_r + s_l)/2 + v_d) * cos(x_k(3));
-           x_k(2) + ((s_r + s_l)/2 + v_d) * sin(x_k(3));
-           x_k(3) + (s_r - s_l)/l + v_theta];
+    x_k_one_plus = [x_k(1) + ((s_r + s_l)/2 + v_d) * cos(x_k(3));
+                    x_k(2) + ((s_r + s_l)/2 + v_d) * sin(x_k(3));
+                    x_k(3) + (s_r - s_l)/l + v_theta];
 
 end
