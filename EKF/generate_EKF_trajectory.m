@@ -11,6 +11,7 @@ function trajectory = generate_EKF_trajectory(landmarks, odometry, sensors, traj
     % Parameters
 
     l = 0.1;
+    mu = [0,0];
     % Position noise/uncertainty
     sigma_d = 0.5;
     sigma_theta = 10*pi/180;
@@ -33,7 +34,7 @@ function trajectory = generate_EKF_trajectory(landmarks, odometry, sensors, traj
     % First position (row) is (0,0,0,0) with uncertainty P0
     trajectory_reconstructed = zeros(rows,cols);
     % First column is time (discrete, k)
-    trajectory_reconstructed(:, 1) = transpose((0:num_rows-1));
+    trajectory_reconstructed(:, 1) = transpose((0:rows-1));
     
     %----------------------------------------------------------------------
     % Generate trajectory
@@ -43,10 +44,14 @@ function trajectory = generate_EKF_trajectory(landmarks, odometry, sensors, traj
         x_k = trajectory_reconstructed(k-1, 2:4);
         s_r = odometry(k,3);
         s_l = odometry(k,2);
+
+        % Noise
+        v = mvnrnd(mu, V, 1);
+        omega = mvnrnd(mu, W, 1);
     
         % Prediction
         % State
-        x_k_one_plus = x_predict(x_k, s_r, s_l, v_d, v_theta, l);
+        x_k_one_plus = x_predict(x_k, s_r, s_l, v(1), v(2), l);
         % Uncertainty
         F_x = get_F_x(x_k_one_plus, s_r, s_l);
         F_v = get_F_v(x_k_one_plus);
@@ -55,12 +60,18 @@ function trajectory = generate_EKF_trajectory(landmarks, odometry, sensors, traj
     
         % Correction update
         % State
-        z = sensors(k,2:end);
+        % Reshape z to match p_i
+        z = [sensors(k,2:3);
+             sensors(k,4:5);
+             sensors(k,6:7);
+             sensors(k,8:9);
+             sensors(k,10:11);
+             sensors(k,12:13)];
         p_i = landmarks;
         H_x = get_H_x(x_k_one_plus, p_i, z);
         H_omega = get_H_omega();
         K = get_K(P_k_one_plus, H_x, H_omega, W);
-        nu = get_nu(z, x_k_one_plus, p_i, omega_r, omega_beta);
+        nu = get_nu(x_k_one_plus, p_i, z, omega(1), omega(2));
         x_k_one = x_correction(x_k_one_plus, K, nu);
         % Uncertainty
         P_k_one = P_correction(P_k_one_plus, K, H_x);

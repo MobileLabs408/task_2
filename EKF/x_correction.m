@@ -10,4 +10,7 @@ function x_k_one = x_correction(x_k_one_plus, K, nu)
 
     x_k_one = x_k_one_plus + K*nu;
 
+     % Ensure theta between -pi and pi
+    x_k_one(3) = atan2(sin(x_k_one(3)), cos(x_k_one(3)));
+
 end
