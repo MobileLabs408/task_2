@@ -15,13 +15,13 @@ clc
 %% Load data
 %==========================================================================
 % x, y
-landmarks = table2array(readtable('Localisation\Localisation\lab4_dataset_landmarks.csv'));
+landmarks = table2array(readtable('..\Localisation\Localisation\lab4_dataset_landmarks.csv'));
 % t, DeltaSL, DeltaSR
-odometry = table2array(readtable('Localisation\Localisation\lab4_dataset_odometry.csv'));
+odometry = table2array(readtable('..\Localisation\Localisation\lab4_dataset_odometry.csv'));
 % t, dist 1, angle 1, ..., dist 6, angle 6
-sensors = table2array(readtable('Localisation\Localisation\lab4_dataset_sensors.csv'));
+sensors = table2array(readtable('..\Localisation\Localisation\lab4_dataset_sensors.csv'));
 % t, x, y, theta
-trajectory_original = table2array(readtable('Localisation\Localisation\lab4_dataset_traj.csv'));
+trajectory_original = table2array(readtable('..\Localisation\Localisation\lab4_dataset_traj.csv'));
 %==========================================================================
 %% Particle filter
 %==========================================================================

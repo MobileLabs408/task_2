@@ -11,7 +11,6 @@ function trajectory = generate_EKF_trajectory(landmarks, odometry, sensors, traj
     % Parameters
 
     l = 0.1;
-    mu = [0,0];
     % Position noise/uncertainty
     sigma_d = 0.5;
     sigma_theta = 10*pi/180;
@@ -24,11 +23,13 @@ function trajectory = generate_EKF_trajectory(landmarks, odometry, sensors, traj
     sigma_theta_0 = 2*pi/180;
     
     % Matrices
+    mu = [0,0];
     V = diag([sigma_d, sigma_theta].^2);
     W = diag([sigma_r, sigma_beta].^2);
     % Initial covariance matrix for state uncertainty
-    P0 = diag([sigma_x, sigma_y, sigma_theta_0].^2);
-    
+    %P0 = diag([sigma_x, sigma_y, sigma_theta_0].^2);
+    P0 = diag([0, 0, 0].^2);
+
     % Initialize matrix which holds reconstructed trajectory
     [rows, cols] = size(trajectory_original);
     % First position (row) is (0,0,0,0) with uncertainty P0
@@ -46,9 +47,11 @@ function trajectory = generate_EKF_trajectory(landmarks, odometry, sensors, traj
         s_l = odometry(k,2);
 
         % Noise
-        v = mvnrnd(mu, V, 1);
-        omega = mvnrnd(mu, W, 1);
-    
+        %v = mvnrnd(mu, V, 1);
+        v = [0,0];
+        %omega = mvnrnd(mu, W, 1);
+        omega = [0,0];
+
         % Prediction
         % State
         x_k_one_plus = x_predict(x_k, s_r, s_l, v(1), v(2), l);
@@ -57,7 +60,7 @@ function trajectory = generate_EKF_trajectory(landmarks, odometry, sensors, traj
         F_v = get_F_v(x_k_one_plus);
         P_k_one_plus = P_predict(F_x, F_v, V, P_k);
     
-    
+        %{
         % Correction update
         % State
         % Reshape z to match p_i
@@ -79,6 +82,9 @@ function trajectory = generate_EKF_trajectory(landmarks, odometry, sensors, traj
         %
         trajectory_reconstructed(k, 2:4) = x_k_one';
         P_k = P_k_one;
+        %}
+        trajectory_reconstructed(k, 2:4) = x_k_one_plus';
+        P_k = P_k_one_plus;
     end
 
     %----------------------------------------------------------------------
