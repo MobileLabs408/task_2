@@ -18,17 +18,16 @@ function trajectory = generate_EKF_trajectory(landmarks, odometry, sensors, traj
     sigma_r = 0.5;
     sigma_beta = 10*pi/180;
     % Initial position uncertainty
-    sigma_x = 0.1;
-    sigma_y = 0.1;
-    sigma_theta_0 = 2*pi/180;
+    sigma_x = 10;
+    sigma_y = 10;
+    sigma_theta_0 = pi^2;
     
     % Matrices
     mu = [0,0];
     V = diag([sigma_d, sigma_theta].^2);
     W = diag([sigma_r, sigma_beta].^2);
-    % Initial covariance matrix for state uncertainty
-    %P0 = diag([sigma_x, sigma_y, sigma_theta_0].^2);
-    P0 = diag([0, 0, 0].^2);
+    % Initial covariance matrix for starting state uncertainty
+    P0 = diag([sigma_x, sigma_y, sigma_theta_0]);
 
     % Initialize matrix which holds reconstructed trajectory
     [rows, cols] = size(trajectory_original);
@@ -40,6 +39,7 @@ function trajectory = generate_EKF_trajectory(landmarks, odometry, sensors, traj
     %----------------------------------------------------------------------
     % Generate trajectory
 
+    % First itteration (starting position) use P0 as covariance of noise
     P_k = P0;
     for k = 2:rows
         x_k = trajectory_reconstructed(k-1, 2:4);
@@ -47,10 +47,12 @@ function trajectory = generate_EKF_trajectory(landmarks, odometry, sensors, traj
         s_l = odometry(k,2);
 
         % Noise
-        %v = mvnrnd(mu, V, 1);
-        v = [0,0];
-        %omega = mvnrnd(mu, W, 1);
-        omega = [0,0];
+        v = mvnrnd(mu, V, 1);
+        % Ensure theta error is in [-pi,pi]
+        v(2) = atan2(sin(v(2)), cos(v(2)));
+        omega = mvnrnd(mu, W, 1);
+        % Ensure beta error is in [-pi,pi]
+        omega(2) = atan2(sin(omega(2)), cos(omega(2)));
 
         % Prediction
         % State
@@ -79,16 +81,18 @@ function trajectory = generate_EKF_trajectory(landmarks, odometry, sensors, traj
         % Uncertainty
         P_k_one = P_correction(P_k_one_plus, K, H_x);
 
-        %
+        % Store state and set value for next loop
         trajectory_reconstructed(k, 2:4) = x_k_one';
         P_k = P_k_one;
         %}
+        
         trajectory_reconstructed(k, 2:4) = x_k_one_plus';
         P_k = P_k_one_plus;
+        
     end
 
     %----------------------------------------------------------------------
-    %
+    % Return reconstructed trajectory
 
     trajectory = trajectory_reconstructed;
 

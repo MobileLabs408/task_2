@@ -9,6 +9,6 @@
 function K = get_K(P_k_one_plus, H_x, H_omega, W)
 
     % Note that ' is used for transpose
-    K = P_k_one_plus * H_x' * (H_x * P_k_one_plus * H_x' + H_omega * W * H_omega')^(-1);
+    K = P_k_one_plus * H_x' * inv(H_x * P_k_one_plus * H_x' + H_omega * W * H_omega');
 
 end
