@@ -14,7 +14,8 @@ clc
 %==========================================================================
 %% Load data
 %==========================================================================
-% x, y
+% x, y 
+% (rows correspond to landmark 1, ..., 6)
 landmarks = table2array(readtable('..\Localisation\Localisation\lab4_dataset_landmarks.csv'));
 % t, DeltaSL, DeltaSR
 odometry = table2array(readtable('..\Localisation\Localisation\lab4_dataset_odometry.csv'));
@@ -26,15 +27,18 @@ trajectory_original = table2array(readtable('..\Localisation\Localisation\lab4_d
 %% Particle filter
 %==========================================================================
 
+% Number of particles
+N = 100;
+
 tic;
-[trajectory_reconstructed, final_particles] = generate_pf_trajectory(landmarks, odometry, sensors, trajectory_original);
+[trajectory_reconstructed, final_particles] = generate_pf_trajectory(landmarks, odometry, sensors, trajectory_original, N);
 execution_time = toc;
 
 %==========================================================================
 %% Display execution time
 %==========================================================================
 
-disp(['Execution time: ', num2str(execution_time), ' (s)']);
+disp(['Execution time for ', num2str(N), ' number of particles: ', num2str(execution_time), ' (s)']);
 
 %==========================================================================
 %% Plot xy

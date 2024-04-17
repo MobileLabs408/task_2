@@ -14,7 +14,7 @@ clc
 %==========================================================================
 %% Load data
 %==========================================================================
-% x, y
+% x, y (rows correspond to landmark 1, ..., 6)
 landmarks = table2array(readtable('..\Localisation\Localisation\lab4_dataset_landmarks.csv'));
 % t, DeltaSL, DeltaSR
 odometry = table2array(readtable('..\Localisation\Localisation\lab4_dataset_odometry.csv'));

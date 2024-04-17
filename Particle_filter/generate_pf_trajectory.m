@@ -6,7 +6,7 @@
 % This software is licensed under the MIT License
 % Refer to the LICENSE file for details
 %==========================================================================
-function [trajectory, final_particles] = generate_pf_trajectory(landmarks, odometry, sensors, trajectory_original)
+function [trajectory, final_particles] = generate_pf_trajectory(landmarks, odometry, sensors, trajectory_original, N)
     %----------------------------------------------------------------------
     % Parameters
 
@@ -32,14 +32,14 @@ function [trajectory, final_particles] = generate_pf_trajectory(landmarks, odome
     theta_min = -pi;
     theta_max = pi;
 
-    % Number of particles
-    N = 100;
     % Initilize particles
     x_0 = x_min + (x_max - x_min) * rand(N, 1);
     y_0 = y_min + (y_max - y_min) * rand(N, 1);
     theta_0 = theta_min + (theta_max - theta_min) * rand(N, 1);
+    % Ensure theta in [-pi,pi]
+    theta_0 = atan2(sin(theta_0), cos(theta_0));
     particles = [x_0, y_0, theta_0];
-    % And their weights
+    % And particle weights
     w = ones(N,1);
     w = w/N;
 
@@ -51,7 +51,7 @@ function [trajectory, final_particles] = generate_pf_trajectory(landmarks, odome
     trajectory_reconstructed(:, 1) = transpose((0:rows-1));
 
     %----------------------------------------------------------------------
-    %
+    % State estimation
 
     % Rather than using k and k+1, k-1 and k is used
     for k = 2:rows
@@ -59,17 +59,15 @@ function [trajectory, final_particles] = generate_pf_trajectory(landmarks, odome
         s_r = odometry(k-1,3);
         s_l = odometry(k-1,2);
 
-        % Noise
-        omega_d = random(omega_d_dist);
-        omega_beta = random(omega_beta_dist); 
-
-        % Spread
-        r_d = unifrnd(a_d, b_d);
-        r_theta = random(r_theta_dist);
-
         % Prediction
-        % Particle filter prediction update
         for i = 1:N
+            % Spread
+            r_d = unifrnd(a_d, b_d);
+            r_theta = random(r_theta_dist);
+            % Ensure angle in [-pi,pi]
+            r_theta = atan2(sin(r_theta), cos(r_theta));
+
+            % Particle filter prediction update
             particles(i,:) = x_i_predict(particles(i,:), s_r, s_l, r_d, r_theta, l);
         end
 
@@ -92,6 +90,12 @@ function [trajectory, final_particles] = generate_pf_trajectory(landmarks, odome
 
         % Innovation and weight update for all particles
         for i = 1:N
+            % Noise
+            omega_d = random(omega_d_dist);
+            omega_beta = random(omega_beta_dist);
+            % Ensure angle in [-pi,pi]
+            omega_beta = atan2(sin(omega_beta), cos(omega_beta));
+
             % Innovation
             nu = get_nu_pf(particles(i, :), p, z, omega_d, omega_beta);
 
