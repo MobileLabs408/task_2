@@ -49,7 +49,7 @@ function trajectory = generate_pf_trajectory(landmarks, odometry, sensors, traje
     % Initialize matrix which holds reconstructed trajectory (mean of all particles at each time step)
     [rows, cols] = size(trajectory_original);
     trajectory_reconstructed = zeros(rows,cols);
-    trajectory_reconstructed(1,2:4) = [mean(particles(1)), mean(particles(2)), mean(particles(3))];
+    trajectory_reconstructed(1,2:4) = [mean(particles(:,1)), mean(particles(:,2)), mean(particles(:,3))];
     % First column is time (discrete, k)
     trajectory_reconstructed(:, 1) = transpose((0:rows-1));
 
@@ -70,12 +70,49 @@ function trajectory = generate_pf_trajectory(landmarks, odometry, sensors, traje
         r_d = unifrnd(a_d, b_d);
         r_theta = random(r_theta_dist);
 
+        % Prediction
         % Particle filter prediction update
         for i = 1:N
             particles(i,:) = x_i_predict(particles(i,:), s_r, s_l, r_d, r_theta, l);
         end
 
-        % Innovation
+        % Correction
+        % All landmark locations
+        p = landmarks;
+        % Reshape z to match p
+        % z(k+1) containing sensor readings to all landmarks
+        z = [sensors(k,2:3);
+             sensors(k,4:5);
+             sensors(k,6:7);
+             sensors(k,8:9);
+             sensors(k,10:11);
+             sensors(k,12:13)];
+        % Ensure all beta in [-pi,pi]
+        [z_rows,~] = size(z);
+        for beta = 2:z_rows
+            z(beta) = atan2(sin(z(beta)),cos(z(beta)));
+        end
+
+        % Innovation and weight update for all particles
+        for i = 1:N
+            % Innovation
+            nu = get_nu_pf(particles(i, :), p, z, omega_d, omega_beta);
+
+            % Covariance like matrix L
+            L = find_L();
+
+            % Weight update
+            w(i) = weight_update(nu, L);
+
+            % Normalize weights
+            w = normalize_weights(w);
+        end        
+
+        % Low variance resampling
+        particles = low_var_resampling(particles, w, N);
+
+        % Each point in the trajectory is just the mean of all the particles
+        trajectory_reconstructed(k,2:4) = [mean(particles(:,1)), mean(particles(:,2)), mean(particles(:,3))];
 
     end
 
