@@ -41,10 +41,13 @@ function trajectory = generate_EKF_trajectory(landmarks, odometry, sensors, traj
 
     % First itteration (starting position) use P0 as covariance of noise
     P_k = P0;
+    % Rather than using k and k+1, k-1 and k is used
     for k = 2:rows
+        % Use previous x as x_k (x(k)) and new x will be x_k_one (x(k+1))
         x_k = trajectory_reconstructed(k-1, 2:4);
-        s_r = odometry(k,3);
-        s_l = odometry(k,2);
+        % u(k)
+        s_r = odometry(k-1,3);
+        s_l = odometry(k-1,2);
 
         % Noise
         v = mvnrnd(mu, V, 1);
@@ -62,21 +65,28 @@ function trajectory = generate_EKF_trajectory(landmarks, odometry, sensors, traj
         F_v = get_F_v(x_k_one_plus);
         P_k_one_plus = P_predict(F_x, F_v, V, P_k);
     
-        %{
+        
         % Correction update
-        % State
         % Reshape z to match p_i
+        % z(k+1) containing sensor readings to all landmarks
         z = [sensors(k,2:3);
              sensors(k,4:5);
              sensors(k,6:7);
              sensors(k,8:9);
              sensors(k,10:11);
              sensors(k,12:13)];
+        % Ensure all beta in [-pi,pi]
+        [z_rows,~] = size(z);
+        for beta = 2:z_rows
+            z(beta) = atan2(sin(z(beta)),cos(z(beta)));
+        end
+        % All landmark locations
         p_i = landmarks;
         H_x = get_H_x(x_k_one_plus, p_i, z);
         H_omega = get_H_omega();
         K = get_K(P_k_one_plus, H_x, H_omega, W);
         nu = get_nu(x_k_one_plus, p_i, z, omega(1), omega(2));
+        % State
         x_k_one = x_correction(x_k_one_plus, K, nu);
         % Uncertainty
         P_k_one = P_correction(P_k_one_plus, K, H_x);
@@ -84,11 +94,12 @@ function trajectory = generate_EKF_trajectory(landmarks, odometry, sensors, traj
         % Store state and set value for next loop
         trajectory_reconstructed(k, 2:4) = x_k_one';
         P_k = P_k_one;
-        %}
         
+
+        %{
         trajectory_reconstructed(k, 2:4) = x_k_one_plus';
         P_k = P_k_one_plus;
-        
+        %}
     end
 
     %----------------------------------------------------------------------
