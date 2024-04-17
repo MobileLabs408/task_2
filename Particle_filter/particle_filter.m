@@ -26,6 +26,8 @@ trajectory_original = table2array(readtable('..\Localisation\Localisation\lab4_d
 %% Particle filter
 %==========================================================================
 
+trajectory_reconstructed = generate_pf_trajectory(landmarks, odometry, sensors, trajectory_original);
+
 %==========================================================================
 %% Plot xy
 %==========================================================================
@@ -35,12 +37,13 @@ hold on
 
 plot(landmarks(:,1),landmarks(:,2), 'ko', 'MarkerFaceColor', 'k')
 plot(trajectory_original(:,2),trajectory_original(:,3),'b')
+plot(trajectory_reconstructed(:,2),trajectory_reconstructed(:,3),'r')
 
 xlabel("x (m)")
 ylabel("y (m)")
 xlim([0, 120])
 ylim([-250, 150])
-legend('Landmarks', 'Original trajectory')
+legend('Landmarks', 'Original trajectory','Reconstructed trajectory')
 title("Plot of the original and reconstructed trajectory of the robot on the (x, y) plane")
 
 hold off
@@ -54,24 +57,24 @@ hold on
 
 % x
 subplot(3,1,1)
-plot(trajectory_original(:,1), trajectory_original(:,2),'b')
+plot(trajectory_original(:,1), trajectory_original(:,2),'b',trajectory_reconstructed(:,1), trajectory_reconstructed(:,2),'r')
 xlabel("t (s)")
 ylabel("x (m)")
-legend('Original trajectory')
+legend('Original trajectory','Reconstructed trajectory')
 
 % y
 subplot(3,1,2)
-plot(trajectory_original(:,1), trajectory_original(:,3),'b')
+plot(trajectory_original(:,1), trajectory_original(:,3),'b',trajectory_reconstructed(:,1), trajectory_reconstructed(:,3),'r')
 xlabel("t (s)")
 ylabel("y (m)")
-legend('Original trajectory')
+legend('Original trajectory','Reconstructed trajectory')
 
 % theta
 subplot(3,1,3)
-plot(trajectory_original(:,1), trajectory_original(:,4),'b')
+plot(trajectory_original(:,1), trajectory_original(:,4),'b',trajectory_reconstructed(:,1), trajectory_reconstructed(:,4),'r')
 xlabel("t (s)")
 ylabel("theta (pi)")
-legend('Original trajectory')
+legend('Original trajectory','Reconstructed trajectory')
 
 sgtitle("Plot of the components of the original and reconstructed trajectory of the robot with respect to time")
 
