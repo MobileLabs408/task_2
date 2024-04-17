@@ -8,6 +8,7 @@
 %==========================================================================
 function nu = get_nu(x_k_one_plus, p_i, z, omega_r, omega_beta)
 
+    % Note ' is used for transform
     z_vector = reshape(z, 1, [])';
 
     nu_temp = z_vector - [sqrt((p_i(1,2) - x_k_one_plus(2))^2 + (p_i(1,1) - x_k_one_plus(1))^2) + omega_r;

@@ -1,6 +1,6 @@
 %==========================================================================
 % Author: Carl Larsson
-% Description: Extended kalman filter, state prediction update
+% Description: Extended kalman filter, generate trajectory
 % Date: 2024-04-12
 
 % This software is licensed under the MIT License
@@ -67,7 +67,9 @@ function trajectory = generate_EKF_trajectory(landmarks, odometry, sensors, traj
     
         
         % Correction update
-        % Reshape z to match p_i
+        % All landmark locations
+        p = landmarks;
+        % Reshape z to match p
         % z(k+1) containing sensor readings to all landmarks
         z = [sensors(k,2:3);
              sensors(k,4:5);
@@ -80,12 +82,10 @@ function trajectory = generate_EKF_trajectory(landmarks, odometry, sensors, traj
         for beta = 2:z_rows
             z(beta) = atan2(sin(z(beta)),cos(z(beta)));
         end
-        % All landmark locations
-        p_i = landmarks;
-        H_x = get_H_x(x_k_one_plus, p_i, z);
+        H_x = get_H_x(x_k_one_plus, p, z);
         H_omega = get_H_omega();
         K = get_K(P_k_one_plus, H_x, H_omega, W);
-        nu = get_nu(x_k_one_plus, p_i, z, omega(1), omega(2));
+        nu = get_nu(x_k_one_plus, p, z, omega(1), omega(2));
         % State
         x_k_one = x_correction(x_k_one_plus, K, nu);
         % Uncertainty

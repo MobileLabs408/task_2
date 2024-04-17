@@ -26,7 +26,15 @@ trajectory_original = table2array(readtable('..\Localisation\Localisation\lab4_d
 %% Particle filter
 %==========================================================================
 
-trajectory_reconstructed = generate_pf_trajectory(landmarks, odometry, sensors, trajectory_original);
+tic;
+[trajectory_reconstructed, final_particles] = generate_pf_trajectory(landmarks, odometry, sensors, trajectory_original);
+execution_time = toc;
+
+%==========================================================================
+%% Display execution time
+%==========================================================================
+
+disp(['Execution time: ', num2str(execution_time), ' (s)']);
 
 %==========================================================================
 %% Plot xy
@@ -38,12 +46,14 @@ hold on
 plot(landmarks(:,1),landmarks(:,2), 'ko', 'MarkerFaceColor', 'k')
 plot(trajectory_original(:,2),trajectory_original(:,3),'b')
 plot(trajectory_reconstructed(:,2),trajectory_reconstructed(:,3),'r')
+% Plot final cluster of particles
+plot(final_particles(:,1), final_particles(:,2),"+",'MarkerFaceColor', [0.9 0.9 0.9]);
 
 xlabel("x (m)")
 ylabel("y (m)")
 xlim([0, 120])
 ylim([-250, 150])
-legend('Landmarks', 'Original trajectory','Reconstructed trajectory')
+legend('Landmarks', 'Original trajectory','Reconstructed trajectory', 'Final cluster of particles')
 title("Plot of the original and reconstructed trajectory of the robot on the (x, y) plane")
 
 hold off

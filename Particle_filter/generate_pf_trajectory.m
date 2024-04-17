@@ -6,7 +6,7 @@
 % This software is licensed under the MIT License
 % Refer to the LICENSE file for details
 %==========================================================================
-function trajectory = generate_pf_trajectory(landmarks, odometry, sensors, trajectory_original)
+function [trajectory, final_particles] = generate_pf_trajectory(landmarks, odometry, sensors, trajectory_original)
     %----------------------------------------------------------------------
     % Parameters
 
@@ -31,9 +31,6 @@ function trajectory = generate_pf_trajectory(landmarks, odometry, sensors, traje
     y_max = 150;
     theta_min = -pi;
     theta_max = pi;
-
-    % Matrices
-
 
     % Number of particles
     N = 100;
@@ -117,9 +114,10 @@ function trajectory = generate_pf_trajectory(landmarks, odometry, sensors, traje
     end
 
     %----------------------------------------------------------------------
-    % Return reconstructed trajectory
+    % Return reconstructed trajectory and final particle cluster
 
     trajectory = trajectory_reconstructed;
+    final_particles = particles;
 
     %----------------------------------------------------------------------
 end
