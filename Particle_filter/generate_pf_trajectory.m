@@ -43,10 +43,10 @@ function [trajectory, final_particles] = generate_pf_trajectory(landmarks, odome
     w = ones(N,1);
     w = w/N;
 
-    % Initialize matrix which holds reconstructed trajectory (mean of all particles at each time step)
+    % Initialize matrix which holds reconstructed trajectory (weighted sum of all particles at each time step)
     [rows, cols] = size(trajectory_original);
     trajectory_reconstructed = zeros(rows,cols);
-    trajectory_reconstructed(1,2:4) = [mean(particles(:,1)), mean(particles(:,2)), mean(particles(:,3))];
+    trajectory_reconstructed(1,2:4) = weighted_sum_position(particles,w,N);
     % First column is time (discrete, k)
     trajectory_reconstructed(:, 1) = transpose((0:rows-1));
 
@@ -90,14 +90,8 @@ function [trajectory, final_particles] = generate_pf_trajectory(landmarks, odome
 
         % Innovation and weight update for all particles
         for i = 1:N
-            % Noise
-            omega_d = random(omega_d_dist);
-            omega_beta = random(omega_beta_dist);
-            % Ensure angle in [-pi,pi]
-            omega_beta = atan2(sin(omega_beta), cos(omega_beta));
-
             % Innovation
-            nu = get_nu_pf(particles(i, :), p, z, omega_d, omega_beta);
+            nu = get_nu_pf(particles(i, :), p, z);
 
             % Covariance like matrix L
             L = find_L();
@@ -109,11 +103,11 @@ function [trajectory, final_particles] = generate_pf_trajectory(landmarks, odome
             w = normalize_weights(w);
         end        
 
+        % Each point in the trajectory is just the weighted sum of all the particles
+        trajectory_reconstructed(k,2:4) = weighted_sum_position(particles,w,N);
+
         % Low variance resampling
         particles = low_var_resampling(particles, w, N);
-
-        % Each point in the trajectory is just the mean of all the particles
-        trajectory_reconstructed(k,2:4) = [mean(particles(:,1)), mean(particles(:,2)), mean(particles(:,3))];
 
     end
 

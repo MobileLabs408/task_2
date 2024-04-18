@@ -1,6 +1,6 @@
 %==========================================================================
 % Author: Carl Larsson
-% Description: Extended kalman filter, generate trajectory
+% Description: Generate trajectory using extended kalman filter (EKF)
 % Date: 2024-04-12
 
 % This software is licensed under the MIT License
@@ -10,8 +10,9 @@ function trajectory = generate_EKF_trajectory(landmarks, odometry, sensors, traj
     %----------------------------------------------------------------------
     % Parameters
 
+    % Distance between wheels
     l = 0.1;
-    % Position noise/uncertainty
+    % Odometry noise/error
     sigma_d = 0.5;
     sigma_theta = 10*pi/180;
     % Sensor noise
@@ -31,7 +32,7 @@ function trajectory = generate_EKF_trajectory(landmarks, odometry, sensors, traj
 
     % Initialize matrix which holds reconstructed trajectory
     [rows, cols] = size(trajectory_original);
-    % First position (row) is (0,0,0,0) with uncertainty P0
+    % First position (row) is (0,0,0) with uncertainty P0 (at time k = 0)
     trajectory_reconstructed = zeros(rows,cols);
     % First column is time (discrete, k)
     trajectory_reconstructed(:, 1) = transpose((0:rows-1));
@@ -39,53 +40,48 @@ function trajectory = generate_EKF_trajectory(landmarks, odometry, sensors, traj
     %----------------------------------------------------------------------
     % Generate trajectory
 
-    % First itteration (starting position) use P0 as covariance of noise
+    % First itteration (starting position) use P0 as covariance matrix of state uncertainty
     P_k = P0;
     % Rather than using k and k+1, k-1 and k is used
     for k = 2:rows
-        % Use previous x as x_k (x(k)) and new x will be x_k_one (x(k+1))
+        % Use previous x as x_k (x(k-1)) and new x will be x_k_one (x(k))
         x_k = trajectory_reconstructed(k-1, 2:4);
-        % u(k)
+        % u(k-1)
         s_r = odometry(k-1,3);
         s_l = odometry(k-1,2);
 
-        % Noise
-        v = mvnrnd(mu, V, 1);
-        % Ensure theta error is in [-pi,pi]
-        v(2) = atan2(sin(v(2)), cos(v(2)));
-        omega = mvnrnd(mu, W, 1);
-        % Ensure beta error is in [-pi,pi]
-        omega(2) = atan2(sin(omega(2)), cos(omega(2)));
-
         % Prediction
         % State
-        x_k_one_plus = x_predict(x_k, s_r, s_l, v(1), v(2), l);
+        x_k_one_plus = x_predict(x_k, s_r, s_l, l);
         % Uncertainty
-        F_x = get_F_x(x_k_one_plus, s_r, s_l);
-        F_v = get_F_v(x_k_one_plus);
+        F_x = get_F_x(x_k, s_r, s_l);
+        F_v = get_F_v(x_k);
         P_k_one_plus = P_predict(F_x, F_v, V, P_k);
-    
-        
+   
         % Correction update
         % All landmark locations
+        % Rows are landmarks 1,...,6
+        % Columns are x and y
         p = landmarks;
         % Reshape z to match p
-        % z(k+1) containing sensor readings to all landmarks
+        % z(k) containing sensor readings to all landmarks
+        % Rows are landmarks 1,...,6
+        % Columns are r and beta
         z = [sensors(k,2:3);
              sensors(k,4:5);
              sensors(k,6:7);
              sensors(k,8:9);
              sensors(k,10:11);
              sensors(k,12:13)];
-        % Ensure all beta in [-pi,pi]
+        % Ensure angle is in [-pi,pi]
         [z_rows,~] = size(z);
         for beta = 2:z_rows
             z(beta) = atan2(sin(z(beta)),cos(z(beta)));
         end
-        H_x = get_H_x(x_k_one_plus, p, z);
+        H_x = get_H_x(x_k_one_plus, p);
         H_omega = get_H_omega();
         K = get_K(P_k_one_plus, H_x, H_omega, W);
-        nu = get_nu(x_k_one_plus, p, z, omega(1), omega(2));
+        nu = get_nu(x_k_one_plus, p, z);
         % State
         x_k_one = x_correction(x_k_one_plus, K, nu);
         % Uncertainty
@@ -94,7 +90,6 @@ function trajectory = generate_EKF_trajectory(landmarks, odometry, sensors, traj
         % Store state and set value for next loop
         trajectory_reconstructed(k, 2:4) = x_k_one';
         P_k = P_k_one;
-        
 
         %{
         trajectory_reconstructed(k, 2:4) = x_k_one_plus';

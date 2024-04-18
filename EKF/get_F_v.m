@@ -6,10 +6,10 @@
 % This software is licensed under the MIT License
 % Refer to the LICENSE file for details
 %==========================================================================
-function F_v = get_F_v(x_k_one_plus)
+function F_v = get_F_v(x_k)
 
-    F_v = [cos(x_k_one_plus(3)), 0;
-           sin(x_k_one_plus(3)), 0;
+    F_v = [cos(x_k(3)), 0;
+           sin(x_k(3)), 0;
            0,                    1];
 
 end

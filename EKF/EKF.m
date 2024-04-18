@@ -1,6 +1,6 @@
 %==========================================================================
 % Author: Carl Larsson
-% Description: Extended kalman filter
+% Description: Extended kalman filter (EKF) main file
 % Date: 2024-04-11
 
 % This software is licensed under the MIT License
@@ -14,7 +14,8 @@ clc
 %==========================================================================
 %% Load data
 %==========================================================================
-% x, y (rows correspond to landmark 1, ..., 6)
+% x, y 
+% (rows correspond to landmark 1, ..., 6)
 landmarks = table2array(readtable('..\Localisation\Localisation\lab4_dataset_landmarks.csv'));
 % t, DeltaSL, DeltaSR
 odometry = table2array(readtable('..\Localisation\Localisation\lab4_dataset_odometry.csv'));
@@ -29,12 +30,13 @@ trajectory_original = table2array(readtable('..\Localisation\Localisation\lab4_d
 trajectory_reconstructed = generate_EKF_trajectory(landmarks, odometry, sensors, trajectory_original);
 
 %==========================================================================
-%% Plot xy
+%% Plot xy (coordinates)
 %==========================================================================
 
 figure
 hold on
 
+% Trajectories and landmarks
 plot(landmarks(:,1),landmarks(:,2), 'ko', 'MarkerFaceColor', 'k')
 plot(trajectory_original(:,2),trajectory_original(:,3),'b')
 plot(trajectory_reconstructed(:,2),trajectory_reconstructed(:,3),'r')
@@ -55,21 +57,21 @@ hold off
 figure
 hold on
 
-% x
+% x as a function of t
 subplot(3,1,1)
 plot(trajectory_original(:,1), trajectory_original(:,2),'b',trajectory_reconstructed(:,1), trajectory_reconstructed(:,2),'r')
 xlabel("t (s)")
 ylabel("x (m)")
 legend('Original trajectory','Reconstructed trajectory')
 
-% y
+% y as a function of t
 subplot(3,1,2)
 plot(trajectory_original(:,1), trajectory_original(:,3),'b',trajectory_reconstructed(:,1), trajectory_reconstructed(:,3),'r')
 xlabel("t (s)")
 ylabel("y (m)")
 legend('Original trajectory','Reconstructed trajectory')
 
-% theta
+% theta as a function of t
 subplot(3,1,3)
 plot(trajectory_original(:,1), trajectory_original(:,4),'b',trajectory_reconstructed(:,1), trajectory_reconstructed(:,4),'r')
 xlabel("t (s)")
