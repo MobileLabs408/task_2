@@ -29,13 +29,13 @@ function trajectory = generate_EKF_trajectory(landmarks, odometry, sensors, traj
     % Initial covariance matrix for starting state uncertainty
     P_0 = diag([sigma_x, sigma_y, sigma_theta_0]);
 
-    [rows, cols] = size(trajectory_original);
+    [itterations, cols] = size(trajectory_original);
     % Initialize matrix which holds reconstructed trajectory
     % First position (row) is (0,0,0) with uncertainty P_0 (at time k = 0)
-    trajectory_reconstructed = zeros(rows,cols);
+    trajectory_reconstructed = zeros(itterations,cols);
     % First column is time (discrete, k)
     % t, x, y, theta
-    trajectory_reconstructed(:, 1) = transpose((0:rows-1));
+    trajectory_reconstructed(:, 1) = transpose((0:itterations-1));
     
     %----------------------------------------------------------------------
     %% Generate trajectory
@@ -43,12 +43,13 @@ function trajectory = generate_EKF_trajectory(landmarks, odometry, sensors, traj
     % First itteration (starting position) use P_0 as covariance matrix of state uncertainty
     P_k = P_0;
     % Rather than using k and k+1, k-1 and k is used
-    for k = 2:rows
+    for k = 2:itterations
         % Use previous x as x_k (x(k-1)) and new x will be x_k_one (x(k))
         x_k = trajectory_reconstructed(k-1, 2:4);
         % u(k-1)
         s_r = odometry(k-1,3);
         s_l = odometry(k-1,2);
+
 
         % Prediction
         % State
@@ -57,8 +58,7 @@ function trajectory = generate_EKF_trajectory(landmarks, odometry, sensors, traj
         F_x = get_F_x(x_k, s_r, s_l);
         F_v = get_F_v(x_k);
         P_k_one_plus = P_predict(F_x, F_v, V, P_k);
-   
-        %{
+
         % Correction update
         % All landmark locations
         % Rows are landmarks 1,...,6
@@ -76,8 +76,8 @@ function trajectory = generate_EKF_trajectory(landmarks, odometry, sensors, traj
              sensors(k,12:13)];
         % Ensure angle is in [-pi,pi]
         [z_rows,~] = size(z);
-        for beta = 2:z_rows
-            z(beta) = atan2(sin(z(beta)),cos(z(beta)));
+        for rows = 1:z_rows
+            z(rows,2) = atan2(sin(z(rows,2)),cos(z(rows,2)));
         end
         H_x = get_H_x(x_k_one_plus, p);
         H_omega = get_H_omega();
@@ -91,12 +91,6 @@ function trajectory = generate_EKF_trajectory(landmarks, odometry, sensors, traj
         % Store state and set value for next loop
         trajectory_reconstructed(k, 2:4) = x_k_one';
         P_k = P_k_one;
-        %}
-
-        %
-        trajectory_reconstructed(k, 2:4) = x_k_one_plus';
-        P_k = P_k_one_plus;
-        %}
     end
 
     %----------------------------------------------------------------------

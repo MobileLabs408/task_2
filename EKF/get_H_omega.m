@@ -8,7 +8,7 @@
 %==========================================================================
 function H_omega = get_H_omega()
 
-    % ???
+    % Two rows for each landmark
     H_omega = [1, 0;
                0, 1;
                1, 0;
