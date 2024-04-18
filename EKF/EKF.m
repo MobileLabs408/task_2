@@ -17,7 +17,7 @@ clc
 % x, y 
 % (rows correspond to landmark 1, ..., 6)
 landmarks = table2array(readtable('..\Localisation\Localisation\lab4_dataset_landmarks.csv'));
-% t, DeltaSL, DeltaSR
+% t, s_l, s_r
 odometry = table2array(readtable('..\Localisation\Localisation\lab4_dataset_odometry.csv'));
 % t, dist 1, angle 1, ..., dist 6, angle 6
 sensors = table2array(readtable('..\Localisation\Localisation\lab4_dataset_sensors.csv'));
@@ -27,6 +27,7 @@ trajectory_original = table2array(readtable('..\Localisation\Localisation\lab4_d
 %% EKF
 %==========================================================================
 
+% t, x, y, theta
 trajectory_reconstructed = generate_EKF_trajectory(landmarks, odometry, sensors, trajectory_original);
 
 %==========================================================================

@@ -8,7 +8,7 @@
 %==========================================================================
 function trajectory = generate_EKF_trajectory(landmarks, odometry, sensors, trajectory_original)
     %----------------------------------------------------------------------
-    % Parameters
+    %% Parameters
 
     % Distance between wheels
     l = 0.1;
@@ -23,25 +23,25 @@ function trajectory = generate_EKF_trajectory(landmarks, odometry, sensors, traj
     sigma_y = 10;
     sigma_theta_0 = pi^2;
     
-    % Matrices
-    mu = [0,0];
+    % Noise matrices
     V = diag([sigma_d, sigma_theta].^2);
     W = diag([sigma_r, sigma_beta].^2);
     % Initial covariance matrix for starting state uncertainty
-    P0 = diag([sigma_x, sigma_y, sigma_theta_0]);
+    P_0 = diag([sigma_x, sigma_y, sigma_theta_0]);
 
-    % Initialize matrix which holds reconstructed trajectory
     [rows, cols] = size(trajectory_original);
-    % First position (row) is (0,0,0) with uncertainty P0 (at time k = 0)
+    % Initialize matrix which holds reconstructed trajectory
+    % First position (row) is (0,0,0) with uncertainty P_0 (at time k = 0)
     trajectory_reconstructed = zeros(rows,cols);
     % First column is time (discrete, k)
+    % t, x, y, theta
     trajectory_reconstructed(:, 1) = transpose((0:rows-1));
     
     %----------------------------------------------------------------------
-    % Generate trajectory
+    %% Generate trajectory
 
-    % First itteration (starting position) use P0 as covariance matrix of state uncertainty
-    P_k = P0;
+    % First itteration (starting position) use P_0 as covariance matrix of state uncertainty
+    P_k = P_0;
     % Rather than using k and k+1, k-1 and k is used
     for k = 2:rows
         % Use previous x as x_k (x(k-1)) and new x will be x_k_one (x(k))
@@ -58,6 +58,7 @@ function trajectory = generate_EKF_trajectory(landmarks, odometry, sensors, traj
         F_v = get_F_v(x_k);
         P_k_one_plus = P_predict(F_x, F_v, V, P_k);
    
+        %{
         % Correction update
         % All landmark locations
         % Rows are landmarks 1,...,6
@@ -90,15 +91,16 @@ function trajectory = generate_EKF_trajectory(landmarks, odometry, sensors, traj
         % Store state and set value for next loop
         trajectory_reconstructed(k, 2:4) = x_k_one';
         P_k = P_k_one;
+        %}
 
-        %{
+        %
         trajectory_reconstructed(k, 2:4) = x_k_one_plus';
         P_k = P_k_one_plus;
         %}
     end
 
     %----------------------------------------------------------------------
-    % Return reconstructed trajectory
+    %% Return reconstructed trajectory
 
     trajectory = trajectory_reconstructed;
 
