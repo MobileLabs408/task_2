@@ -74,7 +74,8 @@ legend('Original trajectory','Reconstructed trajectory')
 
 % theta as a function of t
 subplot(3,1,3)
-plot(trajectory_original(:,1), trajectory_original(:,4),'b',trajectory_reconstructed(:,1), trajectory_reconstructed(:,4),'r')
+% Ensure angle is in [-pi,pi]
+plot(trajectory_original(:,1), atan2(sin(trajectory_original(:,4)), cos(trajectory_original(:,4))),'b',trajectory_reconstructed(:,1), trajectory_reconstructed(:,4),'r')
 xlabel("t (s)")
 ylabel("theta (pi)")
 legend('Original trajectory','Reconstructed trajectory')

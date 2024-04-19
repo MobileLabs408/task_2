@@ -76,8 +76,8 @@ function trajectory = generate_EKF_trajectory(landmarks, odometry, sensors, traj
              sensors(k,12:13)];
         % Ensure angle is in [-pi,pi]
         [z_rows,~] = size(z);
-        for rows = 1:z_rows
-            z(rows,2) = atan2(sin(z(rows,2)),cos(z(rows,2)));
+        for row = 1:z_rows
+            z(row,2) = atan2(sin(z(row,2)),cos(z(row,2)));
         end
         H_x = get_H_x(x_k_one_plus, p);
         H_omega = get_H_omega();
