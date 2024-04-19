@@ -10,6 +10,7 @@ function x = weighted_sum_position(particles,w,N)
 
     temp_x = [0,0,0];
 
+    % Weighted sum of position of all particles
     for i = 1:N
         temp_x = temp_x + particles(i,:) * w(i);
     end

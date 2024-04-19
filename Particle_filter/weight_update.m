@@ -8,7 +8,9 @@
 %==========================================================================
 function w_i = weight_update(nu, L)
 
-    w_0 = 0.001;
+    % Ensure nothing has 0 probability
+    % Seems to affect convergance time
+    w_0 = 10^(-9);
 
     % Note that ' is used for transform
     w_i = exp(-nu' * pinv(L) * nu) + w_0;

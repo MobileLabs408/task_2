@@ -52,7 +52,7 @@ function [trajectory, final_particles] = generate_pf_trajectory(landmarks, odome
 
     % Rather than using k and k+1, k-1 and k is used
     for k = 2:itterations
-        % u(k)
+        % u(k-1)
         s_r = odometry(k-1,3);
         s_l = odometry(k-1,2);
 
@@ -74,7 +74,7 @@ function [trajectory, final_particles] = generate_pf_trajectory(landmarks, odome
         % All landmark locations
         p = landmarks;
         % Reshape z to match p
-        % z(k+1) containing sensor readings to all landmarks
+        % z(k) containing sensor readings to all landmarks
         z = [sensors(k,2:3);
              sensors(k,4:5);
              sensors(k,6:7);
