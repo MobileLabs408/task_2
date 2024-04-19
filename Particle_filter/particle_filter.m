@@ -31,6 +31,8 @@ trajectory_original = table2array(readtable('..\Localisation\Localisation\lab4_d
 N = 100;
 
 tic;
+% trajectory_reconstructed: t, x, y, theta
+% final_particles: x, y, theta
 [trajectory_reconstructed, final_particles] = generate_pf_trajectory(landmarks, odometry, sensors, trajectory_original, N);
 execution_time = toc;
 
@@ -69,23 +71,24 @@ hold off
 figure
 hold on
 
-% x
+% x with respect to time
 subplot(3,1,1)
 plot(trajectory_original(:,1), trajectory_original(:,2),'b',trajectory_reconstructed(:,1), trajectory_reconstructed(:,2),'r')
 xlabel("t (s)")
 ylabel("x (m)")
 legend('Original trajectory','Reconstructed trajectory')
 
-% y
+% y with respect to time
 subplot(3,1,2)
 plot(trajectory_original(:,1), trajectory_original(:,3),'b',trajectory_reconstructed(:,1), trajectory_reconstructed(:,3),'r')
 xlabel("t (s)")
 ylabel("y (m)")
 legend('Original trajectory','Reconstructed trajectory')
 
-% theta
+% theta with respect to time
 subplot(3,1,3)
-plot(trajectory_original(:,1), trajectory_original(:,4),'b',trajectory_reconstructed(:,1), trajectory_reconstructed(:,4),'r')
+% Ensure angle is in [-pi,pi]
+plot(trajectory_original(:,1), atan2(sin(trajectory_original(:,4)), cos(trajectory_original(:,4))),'b',trajectory_reconstructed(:,1), trajectory_reconstructed(:,4),'r')
 xlabel("t (s)")
 ylabel("theta (pi)")
 legend('Original trajectory','Reconstructed trajectory')

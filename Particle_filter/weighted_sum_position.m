@@ -14,6 +14,7 @@ function x = weighted_sum_position(particles,w,N)
         temp_x = temp_x + particles(i,:) * w(i);
     end
 
+    % Ensure angle is in [-pi,pi]
     temp_x(3) = atan2(sin(temp_x(3)), cos(temp_x(3)));
 
     x = temp_x;
