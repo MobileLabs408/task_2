@@ -20,6 +20,6 @@ function H_x = get_H_x(x_k_one_plus, p)
            -(p(5,1) - x_k_one_plus(1))/sqrt((p(5,2) - x_k_one_plus(2))^2 + (p(5,1) - x_k_one_plus(1))^2)  , -(p(5,2) - x_k_one_plus(2))/sqrt((p(5,2) - x_k_one_plus(2))^2 + (p(5,1) - x_k_one_plus(1))^2)  ,  0;
             (p(5,2) - x_k_one_plus(2))/sqrt((p(5,2) - x_k_one_plus(2))^2 + (p(5,1) - x_k_one_plus(1))^2)^2, -(p(5,1) - x_k_one_plus(1))/sqrt((p(5,2) - x_k_one_plus(2))^2 + (p(5,1) - x_k_one_plus(1))^2)^2, -1;
            -(p(6,1) - x_k_one_plus(1))/sqrt((p(6,2) - x_k_one_plus(2))^2 + (p(6,1) - x_k_one_plus(1))^2)  , -(p(6,2) - x_k_one_plus(2))/sqrt((p(6,2) - x_k_one_plus(2))^2 + (p(6,1) - x_k_one_plus(1))^2)  ,  0;
-            (p(6,2) - x_k_one_plus(2))/sqrt((p(6,2) - x_k_one_plus(2))^2 + (p(6,1) - x_k_one_plus(1))^2)^2, -(p(6,1) - x_k_one_plus(1))/sqrt((p(6,2) - x_k_one_plus(2))^2 + (p(6,1) - x_k_one_plus(1))^2)^2, -1;];
+            (p(6,2) - x_k_one_plus(2))/sqrt((p(6,2) - x_k_one_plus(2))^2 + (p(6,1) - x_k_one_plus(1))^2)^2, -(p(6,1) - x_k_one_plus(1))/sqrt((p(6,2) - x_k_one_plus(2))^2 + (p(6,1) - x_k_one_plus(1))^2)^2, -1];
 
 end

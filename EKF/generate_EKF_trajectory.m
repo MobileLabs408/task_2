@@ -54,9 +54,10 @@ function trajectory = generate_EKF_trajectory(landmarks, odometry, sensors, traj
         % Prediction
         % State
         x_k_one_plus = x_predict(x_k, s_r, s_l, l);
-        % Uncertainty
+        % Jacobians
         F_x = get_F_x(x_k, s_r, s_l);
         F_v = get_F_v(x_k);
+        % Uncertainty
         P_k_one_plus = P_predict(F_x, F_v, V, P_k);
 
         % Correction update
@@ -79,9 +80,12 @@ function trajectory = generate_EKF_trajectory(landmarks, odometry, sensors, traj
         for row = 1:z_rows
             z(row,2) = atan2(sin(z(row,2)),cos(z(row,2)));
         end
+        % Jacobians
         H_x = get_H_x(x_k_one_plus, p);
         H_omega = get_H_omega();
+        % Kalman gain
         K = get_K(P_k_one_plus, H_x, H_omega, W);
+        % Innovation
         nu = get_nu(x_k_one_plus, p, z);
         % State
         x_k_one = x_correction(x_k_one_plus, K, nu);
@@ -89,6 +93,7 @@ function trajectory = generate_EKF_trajectory(landmarks, odometry, sensors, traj
         P_k_one = P_correction(P_k_one_plus, K, H_x);
 
         % Store state and set value for next loop
+        % Note that ' is used for transform
         trajectory_reconstructed(k, 2:4) = x_k_one';
         P_k = P_k_one;
     end
