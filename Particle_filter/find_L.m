@@ -1,6 +1,6 @@
 %==========================================================================
 % Author: Carl Larsson
-% Description: Calculate covariance like matrix L
+% Description: Particle filter, calculate covariance like matrix L
 % Date: 2024-04-17
 
 % This software is licensed under the MIT License
@@ -8,6 +8,7 @@
 %==========================================================================
 function L = find_L(s_d,s_beta)
 
+    % Accounts for noise distribution
     L = diag([s_d, s_beta, s_d, s_beta, s_d, s_beta, s_d, s_beta, s_d, s_beta, s_d, s_beta,].^2);
 
 end

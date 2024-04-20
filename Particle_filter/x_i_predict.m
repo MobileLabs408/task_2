@@ -1,6 +1,6 @@
 %==========================================================================
 % Author: Carl Larsson
-% Description: Particle filter state prediction for particle i
+% Description: Particle filter, state prediction for particle i
 % Date: 2024-04-17
 
 % This software is licensed under the MIT License

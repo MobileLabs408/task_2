@@ -1,6 +1,6 @@
 %==========================================================================
 % Author: Carl Larsson
-% Description: Calculates weighted sum position for particle filter
+% Description: Particle filter, calculates weighted sum for position estimation
 % Date: 2024-04-17
 
 % This software is licensed under the MIT License

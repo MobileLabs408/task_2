@@ -1,6 +1,6 @@
 %==========================================================================
 % Author: Carl Larsson
-% Description: Generate particle filter trajectory
+% Description: Particle filter, generate trajectory
 % Date: 2024-04-17
 
 % This software is licensed under the MIT License
@@ -40,6 +40,7 @@ function [trajectory, final_particles] = generate_pf_trajectory(landmarks, odome
     particles = [x_0, y_0, theta_0];
     % And particle weights
     w = ones(N,1);
+    % Initially all are uniformly distributed
     w = w/N;
 
     [itterations, cols] = size(trajectory_original);

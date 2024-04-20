@@ -1,6 +1,6 @@
 %==========================================================================
 % Author: Carl Larsson
-% Description: Calculate innovation for particle i to all landmarks
+% Description: Particle filter, calculate innovation for particle i to all landmarks
 % Date: 2024-04-17
 
 % This software is licensed under the MIT License
@@ -8,7 +8,7 @@
 %==========================================================================
 function nu = get_nu_pf(x_i_k_one, p, z)
 
-    % Note ' is used for transform
+    % Note ' is used for transpose
     z_vector = reshape(z', [], 1);
 
     % Note the -z after the matrix

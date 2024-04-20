@@ -1,6 +1,6 @@
 %==========================================================================
 % Author: Carl Larsson
-% Description: Particle filter
+% Description: Particle filter (Sequential Monte-Carlo method), main file
 % Date: 2024-04-11
 
 % This software is licensed under the MIT License
@@ -28,7 +28,7 @@ trajectory_original = table2array(readtable('..\Localisation\Localisation\lab4_d
 %==========================================================================
 
 % Number of particles
-N = 100;
+N = 3000;
 
 tic;
 % trajectory_reconstructed: t, x, y, theta
@@ -49,6 +49,7 @@ disp(['Execution time for ', num2str(N), ' number of particles: ', num2str(execu
 figure
 hold on
 
+% Plot trajectories and landmarks
 plot(landmarks(:,1),landmarks(:,2), 'ko', 'MarkerFaceColor', 'k')
 plot(trajectory_original(:,2),trajectory_original(:,3),'b')
 plot(trajectory_reconstructed(:,2),trajectory_reconstructed(:,3),'r')

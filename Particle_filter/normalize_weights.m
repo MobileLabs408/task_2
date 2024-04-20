@@ -1,6 +1,6 @@
 %==========================================================================
 % Author: Carl Larsson
-% Description: Normalize weights
+% Description: Particle filter, normalize all particle weights
 % Date: 2024-04-17
 
 % This software is licensed under the MIT License
