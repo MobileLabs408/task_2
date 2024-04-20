@@ -8,7 +8,7 @@
 %==========================================================================
 function nu = get_nu(x_k_one_plus, p, z)
 
-    % Note ' is used for transform
+    % Note ' is used for transpose
     z_vector = reshape(z', [], 1);
 
     % Two rows (distance and angle) for each landmark

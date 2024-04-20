@@ -9,8 +9,8 @@
 function K = get_K(P_k_one_plus, H_x, H_omega, W)
 
     % Note that ' is used for transpose
-    % The addition of the diagonal small valued matrix helps with numerical stability
-    eps = 0.01; % epsilon (small value)
+    % Regularization : the addition of the diagonal small valued matrix helps with numerical stability
+    eps = 0.1; % epsilon (small value)
     K = P_k_one_plus * H_x' * pinv(H_x * P_k_one_plus * H_x' + H_omega * W * H_omega' + diag([eps, eps, eps, eps, eps, eps, eps, eps, eps, eps, eps, eps]));
 
 end

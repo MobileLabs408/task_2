@@ -17,8 +17,6 @@ function [trajectory, det_P] = generate_EKF_trajectory(landmarks, odometry, sens
     sigma_theta = 10*pi/180;
     % Sensor noise
     sigma_r = 0.5;
-    % ???????????????????????????????????????
-    % Theta only being noise seems to originate from this
     sigma_beta = 10*pi/180;
     % Initial position uncertainty
     sigma_x = 10;
@@ -52,12 +50,11 @@ function [trajectory, det_P] = generate_EKF_trajectory(landmarks, odometry, sens
     % Rather than using k and k+1, k-1 and k is used
     for k = 2:itterations
         % Use previous x as x_k (x(k-1)) and new x will be x_k_one (x(k))
-        % Note that ' is used for transform
+        % Note that ' is used for transpose
         x_k = trajectory_reconstructed(k-1, 2:4)';
         % u(k-1)
         s_r = odometry(k-1,3);
         s_l = odometry(k-1,2);
-
 
         % Prediction
         % State
@@ -66,7 +63,7 @@ function [trajectory, det_P] = generate_EKF_trajectory(landmarks, odometry, sens
         F_x = get_F_x(x_k, s_r, s_l);
         F_v = get_F_v(x_k);
         % Uncertainty
-        P_k_one_plus = P_predict(F_x, F_v, V, P_k);
+        P_k_one_plus = P_predict(P_k, F_x, F_v, V);
 
         % Correction update
         % All landmark locations
@@ -101,7 +98,7 @@ function [trajectory, det_P] = generate_EKF_trajectory(landmarks, odometry, sens
         P_k_one = P_correction(P_k_one_plus, K, H_x);
 
         % Store state
-        % Note that ' is used for transform
+        % Note that ' is used for transpose
         trajectory_reconstructed(k, 2:4) = x_k_one';
         % Store uncertainty
         temp_det_P(k,2) = sqrt(abs(det(P_k_one)));

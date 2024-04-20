@@ -27,7 +27,8 @@ trajectory_original = table2array(readtable('..\Localisation\Localisation\lab4_d
 %% EKF
 %==========================================================================
 
-% t, x, y, theta
+% trajectory_reconstructed : t, x, y, theta
+% det_P : t, sqrt(|det(P)|)
 [trajectory_reconstructed, det_P] = generate_EKF_trajectory(landmarks, odometry, sensors, trajectory_original);
 
 %==========================================================================

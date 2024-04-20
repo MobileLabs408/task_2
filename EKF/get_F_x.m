@@ -10,6 +10,6 @@ function F_x = get_F_x(x_k, s_r, s_l)
 
     F_x = [1, 0, -(s_r + s_l)/2 * sin(x_k(3));
            0, 1,  (s_r + s_l)/2 * cos(x_k(3));
-           0, 0, 1];
+           0, 0,   1];
 
 end
