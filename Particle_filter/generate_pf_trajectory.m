@@ -19,6 +19,9 @@ function [trajectory, final_particles] = generate_pf_trajectory(landmarks, odome
     mu_theta = 30*pi/180;
     s_theta = 45*pi/180;
     r_theta_dist = makedist('Logistic', 'mu', mu_theta, 'sigma', s_theta);
+    % Sensor noise
+    s_d = 1;
+    s_beta = 20*pi/180;
 
     % Initilization range for particles
     x_min = 0;
@@ -93,7 +96,7 @@ function [trajectory, final_particles] = generate_pf_trajectory(landmarks, odome
             nu = get_nu_pf(particles(i, :), p, z);
 
             % Covariance like matrix L
-            L = find_L();
+            L = find_L(s_d,s_beta);
 
             % Weight update
             w(i) = weight_update(nu, L);
