@@ -28,7 +28,22 @@ trajectory_original = table2array(readtable('..\Localisation\Localisation\lab4_d
 %==========================================================================
 
 % t, x, y, theta
-trajectory_reconstructed = generate_EKF_trajectory(landmarks, odometry, sensors, trajectory_original);
+[trajectory_reconstructed, det_P] = generate_EKF_trajectory(landmarks, odometry, sensors, trajectory_original);
+
+%==========================================================================
+%% Plot uncertainty
+%==========================================================================
+
+figure
+hold on
+
+plot(det_P(:,1),det_P(:,2))
+
+xlabel("t (s)")
+ylabel("Uncertainty (sqrt(|det(P)|))")
+title("Plot of the uncertainty of the state estimate over time")
+
+hold off
 
 %==========================================================================
 %% Plot xy (coordinates)

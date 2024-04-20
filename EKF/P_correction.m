@@ -8,6 +8,8 @@
 %==========================================================================
 function P_k_one = P_correction(P_k_one_plus, K, H_x)
 
-    P_k_one = P_k_one_plus - K * H_x * P_k_one_plus;
+    % The addition of the diagonal small valued matrix helps with numerical stability
+    eps = 0.01; % epsilon (small value)
+    P_k_one = P_k_one_plus - K * H_x * P_k_one_plus + diag([eps, eps, eps]);
 
 end

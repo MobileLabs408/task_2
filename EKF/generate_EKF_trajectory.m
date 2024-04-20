@@ -6,7 +6,7 @@
 % This software is licensed under the MIT License
 % Refer to the LICENSE file for details
 %==========================================================================
-function trajectory = generate_EKF_trajectory(landmarks, odometry, sensors, trajectory_original)
+function [trajectory, det_P] = generate_EKF_trajectory(landmarks, odometry, sensors, trajectory_original)
     %----------------------------------------------------------------------
     %% Parameters
 
@@ -17,6 +17,8 @@ function trajectory = generate_EKF_trajectory(landmarks, odometry, sensors, traj
     sigma_theta = 10*pi/180;
     % Sensor noise
     sigma_r = 0.5;
+    % ???????????????????????????????????????
+    % Theta only being noise seems to originate from this
     sigma_beta = 10*pi/180;
     % Initial position uncertainty
     sigma_x = 10;
@@ -36,16 +38,22 @@ function trajectory = generate_EKF_trajectory(landmarks, odometry, sensors, traj
     % First column is time (discrete, k)
     % t, x, y, theta
     trajectory_reconstructed(:, 1) = transpose((0:itterations-1));
+
+    % Store determinant of uncertainy of state
+    temp_det_P = zeros(itterations,2);
+    temp_det_P(:,1) = transpose((0:itterations-1));
     
     %----------------------------------------------------------------------
     %% Generate trajectory
 
     % First itteration (starting position) use P_0 as covariance matrix of state uncertainty
     P_k = P_0;
+    temp_det_P(1,2) = sqrt(abs(det(P_0)));
     % Rather than using k and k+1, k-1 and k is used
     for k = 2:itterations
         % Use previous x as x_k (x(k-1)) and new x will be x_k_one (x(k))
-        x_k = trajectory_reconstructed(k-1, 2:4);
+        % Note that ' is used for transform
+        x_k = trajectory_reconstructed(k-1, 2:4)';
         % u(k-1)
         s_r = odometry(k-1,3);
         s_l = odometry(k-1,2);
@@ -92,9 +100,12 @@ function trajectory = generate_EKF_trajectory(landmarks, odometry, sensors, traj
         % Uncertainty
         P_k_one = P_correction(P_k_one_plus, K, H_x);
 
-        % Store state and set value for next loop
+        % Store state
         % Note that ' is used for transform
         trajectory_reconstructed(k, 2:4) = x_k_one';
+        % Store uncertainty
+        temp_det_P(k,2) = sqrt(abs(det(P_k_one)));
+        % Set value for next loop
         P_k = P_k_one;
     end
 
@@ -102,6 +113,7 @@ function trajectory = generate_EKF_trajectory(landmarks, odometry, sensors, traj
     %% Return reconstructed trajectory
 
     trajectory = trajectory_reconstructed;
+    det_P = temp_det_P;
 
     %----------------------------------------------------------------------
 end
