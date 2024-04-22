@@ -8,18 +8,7 @@
 %==========================================================================
 function H_omega = get_H_omega()
 
-    % Two rows for each landmark
-    H_omega = [1, 0;
-               0, 1;
-               1, 0;
-               0, 1;
-               1, 0;
-               0, 1;
-               1, 0;
-               0, 1;
-               1, 0;
-               0, 1;
-               1, 0;
-               0, 1];
+    % LxL matrix, where L is number of landmarks observed by sensors
+    H_omega = diag([1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]);
 
 end

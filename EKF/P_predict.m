@@ -10,7 +10,7 @@ function P_k_one_plus = P_predict(P_k, F_x, F_v, V)
 
     % Note that ' is used for transpose
     % Regularization : the addition of the diagonal small valued matrix helps with numerical stability
-    eps = 0.1; % epsilon (small value)
+    eps = 0; % epsilon (small value)
     P_k_one_plus = F_x * P_k * F_x' + F_v * V * F_v' + diag([eps, eps, eps]);
 
 end

@@ -9,7 +9,7 @@
 function P_k_one = P_correction(P_k_one_plus, K, H_x)
 
     % Regularization : the addition of the diagonal small valued matrix helps with numerical stability
-    eps = 0.1; % epsilon (small value)
+    eps = 0; % epsilon (small value)
     P_k_one = P_k_one_plus - K * H_x * P_k_one_plus + diag([eps, eps, eps]);
 
 end

@@ -25,7 +25,8 @@ function [trajectory, det_P] = generate_EKF_trajectory(landmarks, odometry, sens
     
     % Noise matrices
     V = diag([sigma_d, sigma_theta].^2);
-    W = diag([sigma_r, sigma_beta].^2);
+    % One set for each landmark sensor reading
+    W = diag([sigma_r, sigma_beta, sigma_r, sigma_beta, sigma_r, sigma_beta, sigma_r, sigma_beta, sigma_r, sigma_beta, sigma_r, sigma_beta].^2);
     % Initial covariance matrix for starting state uncertainty
     P_0 = diag([sigma_x, sigma_y, sigma_theta_0]);
 
